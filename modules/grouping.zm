@@ -1,0 +1,35 @@
+/******************************************************************************\
+FILE:           grouping.zm
+AUTHOR:         Theo Veenker <theo.veenker@beexy.nl>
+ADAPTED BY:     -
+
+DESCRIPTION:
+
+Defines groups and handles participant group assignment.
+
+
+HISTORY:
+2011-06-07 TV   Created as part of the standard Zep modules.
+
+\******************************************************************************/
+
+
+// Symbolic definition of groups.
+enum TestGroup
+{
+    lut_RL_ST, 	// rak X lut, sot X toef - drukken bij lut
+    toef_RL_ST, // rak X lut, sot X toef - drukken bij toef
+    lut_RT_SL, 	// rak X toef, sot X lut - drukken bij lut
+    toef_RT_SL, // rak X toef, sot X lut - drukken bij toef
+    n_lut_RL_ST, 	// rak X lut, sot X toef - drukken bij lut maar met een beetje noise
+    n_toef_RL_ST, // rak X lut, sot X toef - drukken bij toef maar met een beetje noise
+    n_lut_RT_SL, 	// rak X toef, sot X lut - drukken bij lut maar met een beetje noise
+    n_toef_RT_SL, // rak X toef, sot X lut - drukken bij toef maar met een beetje noise
+}
+    
+// Assigns participant to a group.
+int assign_participant_to_group()
+{
+    // Assign to first (i.e default) group.
+    return select_group_default();
+}

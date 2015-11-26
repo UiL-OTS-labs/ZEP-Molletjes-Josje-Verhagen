@@ -1,0 +1,129 @@
+//NAMESPACE: test
+
+/******************************************************************************\
+FILE:           test_block.zp
+AUTHOR:         Chris van Run (UiL-OTS)
+ADAPTED BY:     -
+
+EXPERIMENT:     A poper Digit Span test
+
+DESCRIPTION: This contains the practice block that shows
+
+HISTORY:
+2014-05-15 CvR   Created.
+
+\******************************************************************************/
+import defs;
+import stimuli;
+import score_page;
+import test_page;
+import output;
+import shuffle;
+
+Block test_block
+	{
+		int block_nr;				// Which block is this?
+		int block_score;			// How much did we actual score this block?
+		bool final_block; 			// is this the final block?
+		
+		TestItem[] testitem_list_block;
+		
+		on_event:entry()
+		{
+			//reset
+			block_score = 0;
+			block_nr++;
+		}
+		
+		// actual test block
+		Block test
+		{
+			on_event:entry()
+			{
+				
+				num_cycles = testitem_list_block.size;
+				
+				//shuffle the items to specs
+				if(shuffle_test_items(testitem_list_block) != OK)
+				{
+					println("Ups: failed to shuffle the stimuli");
+					terminate;
+				}
+				//setup the test page
+				test_page.setup();
+			}
+
+
+			on_event:exit()
+			{
+				test_page.cleanup();
+				test_page.show_cursor();
+				test_output_save(); // save to file
+			}
+
+			Trial trial
+			{
+				TestItem item;
+				
+				on_event:entry()
+				{
+					item = testitem_list_block[test.cycle];
+					test_page.hide_cursor();
+					test_page.action(this, item, now());
+				}
+				
+				on_event:exit()
+				{
+					TestOutput output;
+					output.block	= block_nr;
+					output.trial 	= test.cycle+1;
+
+					//~ output.group 	= TestGroup_str[selected_group];
+					//~ 0 lut_RL_ST, 	// rak X lut, sot X toef - drukken bij lut
+					//~ 1 toef_RL_ST, // rak X lut, sot X toef - drukken bij toef
+					//~ 2 lut_RT_SL, 	// rak X toef, sot X lut - drukken bij lut
+					//~ 3 toef_RT_SL, // rak X toef, sot X lut - drukken bij toef
+
+					output.string_id = item.id;
+					output.focus 	= string(FOCUS_WORD);
+					
+					output.sndfnA 	= item.sndfnA;
+					output.sndfnB 	= item.sndfnB;
+					output.sndfnC 	= item.sndfnC;
+
+					output.correct 	= test_page.response.correct;
+					if(test_page.item.sndfnC == FOCUS_WORD_FN[FOCUS_WORD] && test_page.response.correct == 1)
+						block_score++;
+					output.rt 		= test_page.response.rt; // reaction time at which the set was completed
+					
+					test_output_append(output);	
+				}
+			}
+		}
+		
+		// Now load the score page
+		Part
+		{
+			on_event:entry()
+			{
+				score_page.hide_cursor();
+				score_page.action(this, 0s, -1s, 0s, true, test_block.block_score, test_block.block_nr, final_block); //test_block.block_score
+			}
+			on_event:exit()
+			{
+				score_page.show_cursor();
+			}
+		}
+	}
+
+void test_call(Part caller, TestItem[] testitem_list, bool final_block = false)
+{		
+	//set the block's test items
+	test_block.testitem_list_block = testitem_list;
+	
+	test_block.final_block = final_block;
+	
+	// Activate the task. When the task is done, the registered caller
+    // (c.q. the main experiment object) will automatically be signalled.
+    test_block.enter(caller);
+}

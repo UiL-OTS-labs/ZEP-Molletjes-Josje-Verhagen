@@ -1,0 +1,140 @@
+
+NormalWindow experimenter_dialog_window
+{
+	init()
+	{
+		geometry = ALIGN_CENTER, ALIGN_CENTER, 30;
+        background = WINDOW_COLOR;
+        title = "Experimenter Dialog";
+	}
+	
+	on_event:key_press()
+    {
+        handle_special_key(this, input_key, input_modifiers);
+    }
+}
+
+Page experimenter_dialog_page
+{
+	Block repeat_target;
+	
+	init()
+	{
+	
+	}
+	
+	void show_dialog(Object caller, Block repeat_target_arg, string text)
+	{
+			target = caller;
+			repeat_target = repeat_target_arg;
+			layout.message.text = text;
+			
+			experimenter_dialog_window.head = ctrl_window.head;
+			experimenter_dialog_window.show_page(this);
+            experimenter_dialog_window.show();
+            experimenter_dialog_window.activate();
+	}
+	
+	void done(int op)
+	{
+		if(op == REPEAT)
+			repeat_target.repeat();
+		else if(op == CONT)
+			signal_target(op);
+	}
+	
+	VerticalLayout layout
+        {
+            init()
+            {
+                left_margin = 10;
+                right_margin = 10;
+                top_margin = 10;
+                bottom_margin = 10;
+                spacing = 20;
+                options = 
+                    LAYOUT_STRETCH_ITEMS | 
+                    LAYOUT_ATTACH_LEFT | 
+                    LAYOUT_ATTACH_RIGHT;
+                fill_pattern_color = CONTROL_COLOR;
+            }
+
+
+            LabelGadget message
+            {
+                init()
+                {
+                    font_family = CONTROL_MESSAGE_FONT_FAMILY;
+                    font_size = CONTROL_MESSAGE_FONT_SIZE;
+                    fill_pattern_color = CONTROL_MESSAGE_COLOR;
+                    text_color = CONTROL_MESSAGE_TEXT_COLOR;
+                    is_wrapping = true;
+                    size = 400, 100;
+                    margin = 10;
+                    border = 2;
+                    border_style = BORDER_RIDGE;
+                }
+            }
+
+
+            HorizontalLayout buttons
+            {
+                init()
+                {
+                    spacing = 20;
+                    options = LAYOUT_EQUAL_WIDTH;
+                }
+
+
+                ButtonGadget cont
+                {
+                    init()
+                    {
+                        text = "Continue";
+                        font_family = CONTROL_BUTTON_FONT_FAMILY;
+                        font_size = CONTROL_BUTTON_FONT_SIZE;
+                        fill_pattern_color = CONTROL_BUTTON_COLOR;
+                        text_color = CONTROL_BUTTON_TEXT_COLOR;
+                        size = 120, 40;
+                        margin = 5;
+                        border = 4;
+                        is_focusable = true;
+                    }
+
+
+                    on_event:activate()
+                    {
+                        done(CONT);
+                    }
+                }
+
+
+                ButtonGadget repeat
+                {
+                    init()
+                    {
+                        text = "Repeat";
+                        font_family = CONTROL_BUTTON_FONT_FAMILY;
+                        font_size = CONTROL_BUTTON_FONT_SIZE;
+                        fill_pattern_color = CONTROL_BUTTON_COLOR;
+                        text_color = CONTROL_BUTTON_TEXT_COLOR;
+                        size = 120, 40;
+                        margin = 5;
+                        border = 4;
+                        is_focusable = true;
+                    }
+
+
+                    on_event:activate()
+                    {
+                        done(REPEAT);
+                    }
+                }
+            }
+        }
+}
+
+enum Option {
+	CONT,
+	REPEAT,
+}

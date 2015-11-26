@@ -1,0 +1,439 @@
+/******************************************************************************\
+FILE:           test_page.zm
+AUTHOR:         Chris van Run UiL-OTS <C.P.A.vanrun@uu.nl>
+ADAPTED BY:     -
+
+DESCRIPTION:
+
+Provides a page object to show to the participant during test trials.
+It handles presenting the stimulus and recording the participant's response.
+
+
+HISTORY:
+????????? Cvr   Created.
+
+\******************************************************************************/
+
+import std_sound_output_device;
+
+Page triplet_page
+{
+    TestItem    item;           // trial control parameters
+    bool auto_continue;
+
+    init()
+    {
+        fill_pattern_color = TEST_PAGE_COLOR;
+    }
+
+    on_event:key_press()
+    {	
+		if(input_key == ' ' && !auto_continue)
+			done(CONTINUE);
+		else if(input_key == 'b')
+			response.process_hit(event_time);
+		else
+			handle_special_key(this, input_key, input_modifiers);
+    }
+
+    on_event:message()
+    {
+       if(message_sender == control)
+			response.process_hit(event_time);
+    }
+
+    VerticalLayout layout
+    {
+        init()
+        {
+            height = 0;     // 0 means as large as possible
+        }
+
+        CanvasGadget canvas
+        {
+			dur fade_in_dur;
+			int num_frames_fade_in; 
+			
+            init()
+            {
+                fill_pattern_color = TEST_PAGE_COLOR;
+                offset_x = width / 2;
+                offset_y = height / 2;
+                
+                fade_in_dur = IMAGE_FADE_IN_DURATION;
+				num_frames_fade_in = int(fade_in_dur/display_device.refresh_interval); 
+            }
+            
+            ImageShape normal_image1
+			{
+				pre_update()
+				{
+					if(relative_frame < num_frames_fade_in )
+						this.alpha = real(relative_frame)/real(num_frames_fade_in);
+					else if(reverse_relative_frame < num_frames_fade_in)
+						this.alpha = real(reverse_relative_frame)/real(num_frames_fade_in);
+
+				}
+				
+				init()
+				{
+					x = -width/2; 					//center on canvas
+					y = - height/2;
+					image = stimuli_dir() + "images/" + NORMAL_IMAGE_FILENAME;  //this is adjusted in the setup().
+					canvas.size = int(image_width), int(image_height);
+					
+					is_visible = false;
+				}
+			}
+			
+			ImageShape normal_image2
+			{
+				pre_update()
+				{
+					if(relative_frame < num_frames_fade_in )
+						this.alpha = real(relative_frame)/real(num_frames_fade_in);
+					else if(reverse_relative_frame < num_frames_fade_in)
+						this.alpha = real(reverse_relative_frame)/real(num_frames_fade_in);
+				}
+				
+				init()
+				{
+					x = -width/2; 					//center on canvas
+					y = - height/2;
+					image = stimuli_dir() + "images/" + NORMAL_IMAGE_FILENAME;  //this is adjusted in the setup().
+					is_visible = false;
+				}
+			}
+			
+			ImageShape normal_image3
+			{
+				pre_update()
+				{
+					if(relative_frame < num_frames_fade_in )
+						this.alpha = real(relative_frame)/real(num_frames_fade_in);
+					else if(reverse_relative_frame < num_frames_fade_in)
+						this.alpha = real(reverse_relative_frame)/real(num_frames_fade_in);
+				}
+				
+				init()
+				{
+					x = -width/2; 					//center on canvas
+					y = - height/2;
+					image = stimuli_dir() + "images/" + NORMAL_IMAGE_FILENAME;  //this is adjusted in the setup().
+					is_visible = false;
+				}
+			}
+			
+			 ImageShape reward_image
+			{
+				init()
+				{
+					x = (-width/2); 					//center on canvas
+					y = - height/2;
+					image = stimuli_dir() + "images/" + REWARD_IMAGE_FILENAME;  //this is adjusted in the setup().
+					is_visible = false;
+				}
+			}
+        }
+        
+        void reset()
+			{
+				full_abort();
+				
+				layout.canvas.normal_image1.is_visible = false;
+				layout.canvas.normal_image2.is_visible = false;
+				layout.canvas.normal_image3.is_visible = false;
+				layout.canvas.reward_image.is_visible = false;
+			}
+    }
+	
+    SoundChain soundchain
+        {
+			SoundSequence seq
+				{
+					SoundFile clip1 {}
+					SoundFile clip2 {}
+					SoundFile clip3 {}
+				}
+			
+			SoundPlayback playback {}
+			
+			PlayBackTiming play(time t) //returns an array with 
+				{
+					abort(); //abort any playing sounds in the specific soundchain;
+					
+					playback.device = sound_output_device;
+					PlayBackTiming timing; //holds the 
+					
+					seq.clip1.file = stimuli_dir() + "sounds/" + item.sndfnA;
+					seq.clip1.trailer_duration = INTER_AUDIO_DURATION;
+					
+					timing.start_of_clip2 = t + seq.clip1.duration;
+					seq.clip2.file = stimuli_dir() + "sounds/" + item.sndfnB;
+					timing.end_of_clip2 = timing.start_of_clip2  + seq.clip2.duration; // do not count trailer.
+					seq.clip2.trailer_duration = INTER_AUDIO_DURATION;
+					
+					timing.start_of_clip3 = timing.start_of_clip2 + seq.clip2.duration; //now trailer is counted
+					seq.clip3.file = stimuli_dir() + "sounds/" + item.sndfnC;
+					seq.clip3.trailer_duration = INTRA_AUDIO_DURATION;
+										
+					start(t);
+					timing.final_end_time = expected_finish_time;
+					return timing;
+				}
+		
+		}
+
+    Response response
+    {
+        // Response data.
+        int     rt;             // response time [ms]
+        int     correct;        // correct response: 0=no, 1=yes, -1=n.a.
+
+
+        void clear()
+        {
+            rt = -9999;
+            correct = 1;
+        }
+
+
+        void process_hit(time t)
+        {
+            HitType validity = hit(t);
+
+            // Accept the first hit in the response interval and end the 
+            // response interval.
+            if (validity == HIT_VALID)
+            {
+                rt = int(reaction_time(0));
+                correct = item.required_response == 1; // if a response was required, this is correct. Else this is incorrect (0);
+				if(correct && item.required_response == 1)
+				{
+					layout.canvas.normal_image3.full_abort(); // stop showing the third picture
+					layout.canvas.normal_image3.is_visible = false; // hide the third picture
+					layout.canvas.reward_image.start(t, IMAGE_SHOW_DURATION); // start showing the reward picture
+					
+					triplet_page.timeout.abort();
+					triplet_page.timeout.start(t + IMAGE_SHOW_DURATION + INTRA_AUDIO_DURATION);
+				}
+				
+                ignore_remaining_hits();
+            }
+            else if (validity == HIT_TOO_EARLY || validity == HIT_TOO_LATE)
+            {
+                // False alarm. Deal with this if desired.
+            }
+        }
+        
+        on_event:message()
+        {
+            done(CONTINUE);
+        }
+    }
+
+
+    // Aborts any ongoing activity on this page and signals the initiator
+    // of the trial that we're done.
+    void done(int msgid)
+    {
+        // Just in case; abort presentation if still active.
+        layout.reset();
+        
+		soundchain.abort();
+		
+        signal_target(msgid);   // tell caller we're done
+        target = null;
+
+        control.clear_status();
+        experimenter_notify_page.hide_notification();
+    }
+
+
+    //==========================================================================
+
+
+    // Performs preparatory work required before using this page.
+    void setup()
+    {      		
+		if(IMAGE_FADE_IN_DURATION >= (INTER_AUDIO_DURATION/2))
+				println("WARNING: IMAGE_FADE_IN_DURATION (" + IMAGE_FADE_IN_DURATION + ") should be kept at below half the INTER_AUDIO_DURATION (" + INTER_AUDIO_DURATION + ")!");
+       experimenter_notify_page.setup(); 
+    }
+
+
+    // Performs cleaning up if necessary.
+    void cleanup()
+    {
+        if (control.target == this)
+        {
+            control.disable_keys();
+            control.button_box.disable_buttons();
+            control.target = null;
+        }
+    }
+
+
+    // Starts a trial.
+    void action(Object caller, TestItem it, time tref, bool auto_cont = true)
+    {
+        // Save the passed trial control parameters.
+        item = it;
+		
+		 // Remember who to signal when the trial is over.
+        target = caller;
+        control.target = this;
+        control.button_box.disable_buttons();
+        control.disable_keys();
+        control.button_box.enable_all_buttons(0); // every button --> 0
+		
+		// Enable/disable auto_continue if the triplet has ran out
+		auto_continue = auto_cont;
+		
+        // Show this page (if not yet done) and make tref the trial start time.
+        tref = test_window1.show_test_page(this, tref);
+
+        // Reset response data.
+        response.clear();
+
+		//set-up the play of audio
+		PlayBackTiming timing = soundchain.play(tref);
+		
+		//set first image+sound to start adjust timings to allow for fade in periods.
+		layout.canvas.normal_image1.start(tref-IMAGE_FADE_IN_DURATION, IMAGE_SHOW_DURATION + (2*IMAGE_FADE_IN_DURATION));
+		layout.canvas.normal_image2.start(timing.start_of_clip2-IMAGE_FADE_IN_DURATION, IMAGE_SHOW_DURATION + (2*IMAGE_FADE_IN_DURATION));
+		layout.canvas.normal_image3.start(timing.start_of_clip3-IMAGE_FADE_IN_DURATION, IMAGE_SHOW_DURATION + (2*IMAGE_FADE_IN_DURATION));
+		
+        // Response interval starts at stimulus onset. Timeout at the tref.
+		response.start(timing.end_of_clip2, 0ms); // you have to responde within a certain amount of time
+	
+		timeout.start(timing.final_end_time); //provide feedback to the experimenter and continue if this is needed!
+			
+		// with the 200ms400hz48kh24bit file it should be:
+		//~ println(timing.start_of_clip2 - tref); //550
+		//~ println(timing.end_of_clip2 - tref);//750
+		//~ println(timing.start_of_clip3 - tref);//1100
+		//~ println(timing.final_end_time - tref);//2050
+		
+        // Update status line on control window. Cleared in done() above.
+        control.set_status(
+            string(item.id) + "  " + 
+            string(item.sndfnA) + "  " + 
+            string(item.sndfnB) + "  " + 
+            string(item.sndfnC) + "  " +
+            string(item.required_response)
+            );
+    }
+   
+    Timer timeout 
+    {
+		on_event:expire()
+		{
+			control.set_status("Done!");
+			if(auto_continue)
+			{
+				response.abort();
+				done(CONTINUE);
+			}
+			else
+			{
+				experimenter_notify_page.show_notification("<b>A trial is done!</b>\n\n<i>Press SPACE to proceed</i>");
+			}		
+		}
+	}
+}
+
+// holds timings for playbacktiming
+record PlayBackTiming
+{
+	time start_of_clip2;
+	time end_of_clip2;
+	time start_of_clip3;
+	time final_end_time;
+}
+
+Page experimenter_notify_page
+{  
+	void setup()
+	{
+		experimenter_notify.head = ctrl_window.head;
+		experimenter_notify.show_page(this);
+	}
+	
+	on_event:key_press()
+	{
+		if(input_key == ' ' && !triplet_page.auto_continue)
+			triplet_page.done(CONTINUE);
+		else if(input_key == 'b')
+			triplet_page.response.process_hit(event_time);
+		else
+			handle_special_key(this, input_key, input_modifiers);
+	}
+	
+	void show_notification(string text, dur show_duration = -1s)
+	{
+			layout.message.text = text, true;
+			experimenter_notify.show();
+			if(show_duration > 0ms)
+				hide.start(now() + duration);       
+	}
+	
+	void hide_notification()
+	{
+		experimenter_notify.hide();
+	}
+	
+	Timer hide
+	{
+		on_event:expire()
+		{
+			hide_notification();
+		}
+	}
+	
+	VerticalLayout layout
+        {
+            init()
+            {
+                left_margin = 10;
+                right_margin = 10;
+                top_margin = 10;
+                bottom_margin = 10;
+                spacing = 20;
+                options = LAYOUT_STRETCH_ITEMS;
+                fill_pattern_color = CONTROL_COLOR;
+            }
+            
+            LabelGadget message
+            {
+                init()
+                {
+                    font_family = CONTROL_MESSAGE_FONT_FAMILY;
+                    font_size = 20;
+                    fill_pattern_color = color:none;
+                    text_color = CONTROL_MESSAGE_TEXT_COLOR;
+                    is_wrapping = true;
+                    hor_alignment = ALIGN_CENTER;
+					ver_alignment = ALIGN_CENTER;
+                    size = 200, 40;
+                    max_height = 800;
+                    margin = 10;
+                }
+            }
+        }
+}
+
+NormalWindow experimenter_notify
+{
+	init()
+	{
+		geometry = ALIGN_CENTER, ALIGN_BEGIN, 20;
+        background = WINDOW_COLOR;
+        title = "Notification";
+        test_window1.activate();
+	}
+	on_event:close()
+	{
+		this.hide();
+	}
+}

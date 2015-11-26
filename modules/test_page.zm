@@ -1,0 +1,350 @@
+/******************************************************************************\
+FILE:           test_page.zm
+AUTHOR:         Chris van Run UiL-OTS <C.P.A.vanrun@uu.nl>
+ADAPTED BY:     -
+
+DESCRIPTION:
+
+Provides a page object to show to the participant during test trials.
+It handles presenting the stimulus and recording the participant's response.
+
+
+HISTORY:
+????????? Cvr   Created.
+
+\******************************************************************************/
+
+import std_sound_output_device;
+
+Page test_page
+{
+    int   		counter;           // trial
+    string[]	word_FN;
+    bool		auto_continue;
+    int			score;
+    string		reaction_times = "";
+    
+    
+    init()
+    {
+        fill_pattern_color = color:lightgray;
+    }
+
+    on_event:key_press()
+    {	
+		if(input_key == ' ' && !auto_continue && !word_cycler.is_running)
+		{
+			stcklayout.message.full_abort(); stcklayout.message.is_visible = false;
+			word_cycler.start(event_time);
+		}
+		else if(input_key == 'b')
+			response.process_hit(event_time);
+		else if(input_key == KEY_Escape)
+				done(CONTINUE);
+		else
+			handle_special_key(this, input_key, input_modifiers);
+    }
+
+    on_event:message()
+    {
+       if(message_sender == control)
+			response.process_hit(event_time);
+			
+    }
+
+	StackLayout stcklayout
+	{
+		CanvasGadget background
+		{
+			on_event:resize()
+			{
+				offset_x = round(actual_width / 2);
+				offset_y = round(actual_height / 2);
+			}
+			
+			ImageShape image
+			{
+				void load(string fn)
+				{
+					image = fn;
+					height = round(background.height);
+					width  = round(image_width * (height/image_height));
+					x = -round(actual_width / 2);
+					y = -round(actual_height / 2);
+					
+					is_visible = true;
+				}
+			}
+		}
+			
+		CanvasGadget canvas
+		{
+			dur fade_in_dur;
+			int num_frames_fade_in; 
+			
+			void setup()
+			{
+				offset_x = round(test_window1.width / 2);
+				offset_y = round(test_window1.height / 2);
+			}
+			
+			init()
+			{
+				fade_in_dur = IMAGE_FADE_IN_DURATION;
+				num_frames_fade_in = int(fade_in_dur/display_device.refresh_interval); 
+			}
+			
+			ImageShape normal_image
+			{
+				pre_update()
+				{
+					if(relative_frame < num_frames_fade_in )
+						this.alpha = real(relative_frame)/real(num_frames_fade_in);
+					else if(reverse_relative_frame < num_frames_fade_in)
+						this.alpha = real(reverse_relative_frame)/real(num_frames_fade_in);
+				}
+				
+				init()
+				{
+					image = stimuli_dir() + "images/" + NORMAL_IMAGE_FILENAME;  //this is adjusted in the setup().
+					height = NORMAL_IMAGE_HEIGHT;
+					width  = round(image_width * (height/image_height));
+					x = round(-width/2); 					//center on canvas
+					y = round(-height/2);					
+					is_visible = false;
+				}
+			}
+			
+			 ImageShape reward_image
+			{
+				init()
+				{
+					image = stimuli_dir() + "images/" + REWARD_IMAGE_FILENAME;  //this is adjusted in the setup().
+					height = REWARD_IMAGE_HEIGHT;
+					width  = round(image_width * (height/image_height));
+					x = round(-width/2); 					//center on canvas
+					y = round(-height/2);
+					is_visible = false;
+				}
+			}
+				
+			void reset()
+			{
+				full_abort();
+				
+				stcklayout.canvas.normal_image.is_visible = false;
+				stcklayout.canvas.reward_image.is_visible = false;
+			}
+		}
+		
+		LabelGadget message
+				{
+					init()
+					{
+						text = ">";
+						font_family = TEST_PAGE_MESSAGE_FONT_FAMILY;
+						font_size = TEST_PAGE_MESSAGE_FONT_SIZE*1.5;
+						text_color = color:lightgreen;
+						hor_alignment = ALIGN_CENTER;
+						ver_alignment = ALIGN_END;
+						margin = 100;
+						is_visible = false;
+					}
+				}
+	}
+	
+    SoundChain soundchain
+        {
+			SoundFile clip {}
+
+			SoundPlayback playback {}
+			
+			PlayBackTiming play(time t, string word) //returns an array with 
+				{
+					abort(); //abort any playing sounds in the specific soundchain;
+					
+					playback.device = sound_output_device;
+					PlayBackTiming timing; //holds the timing specifics
+					
+					clip.file = stimuli_dir() + "sounds/" + word;
+					timing.start_of_clip = t;
+					timing.end_of_clip = t + clip.duration;
+					start(t);
+					return timing;
+				}
+		
+		}
+
+    Response response
+    {
+        // Response data.
+		int 	rt;
+		
+        void process_hit(time t)
+        {
+            HitType validity = hit(t);
+
+            // Accept the first hit in the response interval and end the 
+            // response interval. If the response inveral is up any response is correct.
+            if (validity == HIT_VALID)
+            {
+				rt = int(reaction_time(0));
+				score++;
+				reaction_times = reaction_times + "\n" + rt + "ms :" + score;
+				
+				stcklayout.message.full_abort(); stcklayout.message.is_visible = false;
+				
+				stcklayout.canvas.normal_image.full_abort(); // stop showing the third picture
+				stcklayout.canvas.normal_image.is_visible = false; // hide the third picture
+				stcklayout.canvas.reward_image.start(t, IMAGE_SHOW_DURATION); // start showing the reward picture
+				
+				word_cycler.start(t + IMAGE_SHOW_DURATION + INTRA_AUDIO_DURATION - IMAGE_FADE_IN_DURATION);
+				
+                ignore_remaining_hits();
+                stop();
+            }
+            else if (validity == HIT_TOO_EARLY || validity == HIT_TOO_LATE)
+            {
+                // False alarm. Deal with this if desired.
+            }
+        }
+        
+        on_event:message()
+        {
+            done(CONTINUE);
+        }
+    }
+
+
+    // Aborts any ongoing activity on this page and signals the initiator
+    // of the trial that we're done.
+    void done(int msgid)
+    {
+        // Just in case; abort presentation if still active.
+        stcklayout.canvas.reset();
+        
+        word_cycler.abort();
+        word_cycler.first_picture = true;
+        
+		soundchain.abort();
+		
+        signal_target(msgid);   // tell caller we're done
+        target = null;
+
+        control.clear_status();
+    }
+
+
+    //==========================================================================
+
+
+    // Performs preparatory work required before using this page.
+    void setup()
+    {      		
+		if(IMAGE_FADE_IN_DURATION >= (INTER_AUDIO_DURATION/2))
+				println("WARNING: IMAGE_FADE_IN_DURATION (" + IMAGE_FADE_IN_DURATION + ") should be kept at below half the INTER_AUDIO_DURATION (" + INTER_AUDIO_DURATION + ")!");
+		stcklayout.background.image.load(stimuli_dir() + "images/" + BACKGROUND_IMAGE_FILENAME);
+		score = 0;
+		reaction_times = "";
+    }
+
+
+    // Performs cleaning up if necessary.
+    void cleanup()
+    {
+        if (control.target == this)
+        {
+            control.disable_keys();
+            control.button_box.disable_buttons();
+            control.target = null;
+        }
+    }
+
+
+    // Starts a trial.
+    void action(Object caller, string[] it, time tref, bool auto_cont = true)
+    {
+		counter = 0;
+		
+        // Save the passed trial control parameters.
+        word_FN = it;
+		
+		 // Remember who to signal when the trial is over.
+        target = caller;
+        control.target = this;
+        control.button_box.disable_buttons();
+        control.disable_keys();
+        control.button_box.enable_all_buttons(0); // every button --> 0
+		
+		// Enable/disable auto_continue if the triplet has ran out
+		auto_continue = auto_cont;
+		
+        // Show this page (if not yet done) and make tref the trial start time.
+		tref = test_window1.show_test_page(this, tref);
+		stcklayout.canvas.setup();
+		// start the counter
+		word_cycler.start(tref);
+    }
+   
+	Timer word_cycler
+	{
+		bool first_picture;
+		
+		init()
+		{
+			first_picture = true;
+		}
+		
+		on_event:expire()
+		{
+			if(counter == word_FN.size)
+				done(CONTINUE);
+			else
+			{
+				string current_word = word_FN[counter];
+				
+				// if the stimuli are below the show time of the images, we NEED to cancel the previous showing: (it looks quite smoothing)
+				stcklayout.canvas.normal_image.full_abort(); // stop showing the third picture
+				stcklayout.message.is_visible =false;
+				stcklayout.canvas.normal_image.is_visible = false; // hide the third picture
+					
+				// Update status line on control window. Cleared in done() above.
+				control.set_status(word_FN[counter]);
+				
+				//set-up the play of audio
+				PlayBackTiming timing = soundchain.play(expire_time+IMAGE_FADE_IN_DURATION, current_word);
+				
+				//set-up the show of picture
+				if(first_picture)
+					stcklayout.canvas.normal_image.is_visible = true;
+				else
+					stcklayout.canvas.normal_image.start(timing.start_of_clip-IMAGE_FADE_IN_DURATION, IMAGE_SHOW_DURATION + (2*IMAGE_FADE_IN_DURATION));
+				
+				if( current_word == FOCUS__WORD_FN[FOCUS_WORD])
+				{
+					if(auto_continue)
+					{
+						response.start(timing.start_of_clip, INTRA_AUDIO_DURATION);
+						word_cycler.start(timing.end_of_clip + INTRA_AUDIO_DURATION - IMAGE_FADE_IN_DURATION); //provide feedback to the experimenter and continue if this is needed!
+					}
+					else
+					{
+						response.start(timing.start_of_clip, 0ms);
+						stcklayout.message.start(timing.end_of_clip + INTRA_AUDIO_DURATION);
+					}
+				}
+				else
+					word_cycler.start(timing.end_of_clip + INTER_AUDIO_DURATION - IMAGE_FADE_IN_DURATION);
+			}
+			counter++;
+			first_picture = false;
+		}
+	}
+}
+
+// holds timings for playbacktiming
+record PlayBackTiming
+{
+	time start_of_clip;
+	time end_of_clip;
+}

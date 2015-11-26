@@ -1,0 +1,61 @@
+/******************************************************************************\
+FILE:           output.zm
+AUTHOR:         chris van Run (UiL-OTS)
+ADAPTED BY:     -
+
+DESCRIPTION:
+
+Defines the formats of output table(s).
+
+
+HISTORY:
+2014-06-20 CvR   Created.
+
+\******************************************************************************/
+
+
+// Test phase output table record, defining what is to be logged for
+record TestOutput
+{
+	int 		block;
+	int			trial;
+	
+	//~ string		group;
+	//~ 0 lut_RL_ST, 	// rak X lut, sot X toef - drukken bij lut
+    //~ 1 toef_RL_ST, // rak X lut, sot X toef - drukken bij toef
+    //~ 2 lut_RT_SL, 	// rak X toef, sot X lut - drukken bij lut
+    //~ 3 toef_RT_SL, // rak X toef, sot X lut - drukken bij toef
+    
+	int			string_id;
+	string		focus;
+    string		sndfnA;
+    string		sndfnB;
+    string		sndfnC;
+    
+	int			correct;
+	int			rt; // reaction time at which the set was completed
+}
+
+// Test phase output table 1.
+TestOutput[..] test_output;
+
+//------------------------------------------------------------------------------
+
+
+// Appends one row of data to test phase output table 1.
+void test_output_append(TestOutput data)
+{
+    test_output.size = test_output.size + 1;
+    test_output[test_output.size-1] = data;
+}
+
+
+// Writes test phase output table 1 contents to CSV file and clears the table.
+void test_output_save()
+{
+    // Append table to CSV file (create if non-existent). The filename 
+    // format is: <dbname>/<dbnum>/<expname>/ses<sesid>-<tblnum>.csv
+    test_output.append(expdb.experiment.session.table_filename(1), 
+        "Test results");
+    test_output.size = 0;
+}

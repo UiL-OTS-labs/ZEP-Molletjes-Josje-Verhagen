@@ -1,0 +1,300 @@
+/******************************************************************************\
+FILE:           std_pause_page.zm
+AUTHOR:         Theo Veenker <theo.veenker@beexy.nl>
+ADAPTED BY:     -
+
+DESCRIPTION:
+
+Provides a page object for displaying messages. It consists of a message area 
+and an OK button.
+
+
+HISTORY:
+2009-12-02 TV   Created as part of the standard Zep modules.
+
+\******************************************************************************/
+
+
+Page pause_repeat_page
+{
+    bool        checkkeys;      // if set, continue keys enabled
+
+
+    init()
+    {
+        fill_pattern_color = INFO_PAGE_COLOR;
+    }
+
+
+    on_event:key_press()
+    {
+            if(input_key == KEY_Return)
+				 experimenter_dialog_window.activate();
+            handle_special_key(this, input_key, input_modifiers);
+            
+    }
+
+
+    on_event:message()
+    {
+        // Handle 'continue' message received from control page.
+        if (message_arg == CONTINUE)
+            done(CONTINUE);
+    }
+
+
+    VerticalLayout layout
+    {
+        init()
+        {
+            options = LAYOUT_SHRINK_ITEMS;
+            spacing = 50;
+        }
+
+
+        LabelGadget message
+        {
+            init()
+            {
+                font_family = INFO_PAGE_MESSAGE_FONT_FAMILY;
+                font_size = INFO_PAGE_MESSAGE_FONT_SIZE;
+                fill_pattern_color = INFO_PAGE_MESSAGE_COLOR;
+                text_color = INFO_PAGE_MESSAGE_TEXT_COLOR;
+                hor_alignment = ALIGN_BEGIN;
+                ver_alignment = ALIGN_BEGIN;
+                is_wrapping = true;
+                size = 900, -1;
+                margin = 20;
+                border = 3;
+                border_style = BORDER_RIDGE;
+            }
+        }       
+    }
+
+
+    Timer timer
+    {
+        on_event:expire()
+        {
+            done(TIMEOUT);
+        }
+    }
+
+
+    void done(int msgid)
+    {
+        timer.abort();
+
+        checkkeys = false;
+
+        signal_target(msgid);   // Tell caller we're done.
+        target = null;
+
+        if (control.target == this)
+        {
+            control.disable_keys();
+            control.target = null;
+        }
+    }
+
+
+    //==========================================================================
+
+
+    void set_text(string txt, bool markup=false)
+    {
+        layout.message.text = txt, markup;
+    }
+    
+    void set_dialog_text(string txt, bool markup=false)
+    {
+		experimenter_dialog_page.layout.message.text = txt, markup;
+	}
+
+
+    void set_text_size(int width, int height)
+    {
+        layout.message.size = width, height;
+    }
+
+    void action(Object caller, Block repeat_targ, string text = "")
+    {
+        timer.abort();
+        
+    	// Clear page transition delay.
+    	page_transition_delay = 0s;
+
+        test_window1.show_page(this);
+        
+        set_dialog_text(text);
+        experimenter_dialog_page.show_dialog(caller, repeat_targ);
+        target = caller;
+    }
+
+
+    void stop_action()
+    {
+        timer.abort();
+
+        checkkeys = false;
+
+        target = null;
+
+        if (control.target == this)
+        {
+            control.disable_keys();
+            control.target = null;
+        }
+    }
+}
+
+Page experimenter_dialog_page
+{
+	Block repeat_target;
+	
+	  on_event:key_press()
+		{	
+            if(input_key == 'r')
+				done(REPEAT);
+            else if(input_key == 'c')
+				done(CONT);
+            else
+            handle_special_key(this, input_key, input_modifiers);
+		}
+    
+	void show_dialog(Object caller, Block repeat_target_arg)
+	{
+			target = caller;
+			repeat_target = repeat_target_arg;
+			
+			experimenter_dialog_window.head = ctrl_window.head;
+			experimenter_dialog_window.show_page(this);
+			experimenter_dialog_window.show();        
+			focus.start(now()+100ms);    
+	}
+	
+	Timer focus {
+		on_event:expire()
+		{
+			experimenter_dialog_window.activate();
+		}
+	}
+	void hide_dialog()
+	{
+		experimenter_dialog_window.deactivate();
+		experimenter_dialog_window.hide();
+		test_window1.activate();
+	}
+	
+	void done(int op)
+	{
+		if(op == REPEAT)
+			repeat_target.repeat();
+		else if(op == CONT)
+			pause_repeat_page.done(CONTINUE);
+		hide_dialog();
+	}
+	
+	VerticalLayout layout
+        {
+            init()
+            {
+                left_margin = 10;
+                right_margin = 10;
+                top_margin = 10;
+                bottom_margin = 10;
+                spacing = 20;
+                options = 
+                    LAYOUT_STRETCH_ITEMS | 
+                    LAYOUT_ATTACH_LEFT | 
+                    LAYOUT_ATTACH_RIGHT;
+                fill_pattern_color = CONTROL_COLOR;
+            }
+
+
+            LabelGadget message
+            {
+                init()
+                {
+                    font_family = CONTROL_MESSAGE_FONT_FAMILY;
+                    font_size = 12;
+                    fill_pattern_color = CONTROL_MESSAGE_COLOR;
+                    text_color = CONTROL_MESSAGE_TEXT_COLOR;
+                    is_wrapping = true;
+                    hor_alignment = ALIGN_BEGIN;
+					ver_alignment = ALIGN_BEGIN;
+                    size = -1, 200;
+                    max_height = 800;
+                    margin = 10;
+                    border = 2;
+                    border_style = BORDER_RIDGE;
+                }
+            }
+
+               ButtonGadget cont
+                {
+                    init()
+                    {
+                        text = "<b>C</b>ontinue", true;
+                        font_family = CONTROL_BUTTON_FONT_FAMILY;
+                        font_size = CONTROL_BUTTON_FONT_SIZE;
+                        fill_pattern_color = CONTROL_BUTTON_COLOR;
+                        text_color = CONTROL_BUTTON_TEXT_COLOR;
+                        size = 120, 20;
+                        margin = 5;
+                        border = 4;
+                        is_focusable = false;
+                    }
+
+
+                    on_event:activate()
+                    {
+                        done(CONT);
+                    }
+                }
+
+
+                ButtonGadget repeat
+                {
+                    init()
+                    {
+                        text = "<b>R</b>epeat", true;
+                        font_family = CONTROL_BUTTON_FONT_FAMILY;
+                        font_size = CONTROL_BUTTON_FONT_SIZE;
+                        fill_pattern_color = CONTROL_BUTTON_COLOR;
+                        text_color = CONTROL_BUTTON_TEXT_COLOR;
+                        size = 120, 20;
+                        margin = 5;
+                        border = 4;
+                        is_focusable = false;
+                    }
+
+
+                    on_event:activate()
+                    {
+                        done(REPEAT);
+                    }
+                }
+        }
+}
+
+NormalWindow experimenter_dialog_window
+{
+	init()
+	{
+		geometry = ALIGN_CENTER, ALIGN_CENTER, 220, 480;
+        background = WINDOW_COLOR;
+        title = "Pause Dialog";
+	}
+	
+	 on_event:close()
+    {
+        // Let ctrl_window handle abort request message.
+        signal(ctrl_window, SYS_QUIT);
+    }
+}
+
+enum Option {
+	CONT,
+	REPEAT,
+}

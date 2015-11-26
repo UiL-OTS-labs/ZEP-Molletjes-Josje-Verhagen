@@ -1,0 +1,75 @@
+/******************************************************************************\
+FILE:           globaldefs.zm
+AUTHOR:         John Doe <jdoe@silly-research.org>
+ADAPTED BY:     -
+
+DESCRIPTION:
+
+Defines global experiment settings such experiment version, database id and
+id of the default researcher.
+
+
+HISTORY:
+yyyy-mm-dd JD   Created.
+
+\******************************************************************************/
+
+
+// Experiment version. In piloting stage and later increment this on each 
+// relevant change.
+const int       EXPERIMENT_VERSION              = 1;
+
+
+// Database id. Any alphanumeric identifier is OK (typically set to "01").
+const string    DATABASE_NUMBER                 = "01";
+
+
+// ID of default researcher.
+const string    DEFAULT_RESEARCHER_ID           = "Ash_Ketchup"; // John Doe
+
+
+// Whether experiment record, researcher record and group record should 
+// be checked out for updating (true) or reading only (false) during the 
+// experiment session. The participant record and experiment session 
+// record are always checked out for updating.
+const bool      EXPERIMENT_RECORD_UPDATEABLE    = false;
+const bool      RESEARCHER_RECORD_UPDATEABLE    = false;
+const bool      GROUP_RECORD_UPDATEABLE         = false;
+
+
+// Controls whether the assigned group is shown in the control window.
+// Set this to false if the experimenter should not be aware of the 
+// selected group.
+const bool      SHOW_ASSIGNED_GROUP             	= true;
+
+const bool      CFG_GIVE_PRACTICE             		= true;
+
+
+//score page settings
+const string		BACKGROUND_IMAGE_FILENAME	=	"emptyBack.png";
+
+// image settings:
+const string		NORMAL_IMAGE_FILENAME	=	"mol_1.svg";
+const int			NORMAL_IMAGE_HEIGHT     =  500;
+
+const string		REWARD_IMAGE_FILENAME	=	"mol_2.svg";
+const int			FINAL_BLOCK_NR			=	5;
+const string		FINAL_BLOCK_IMAGE_FILENAME = "final.svg";
+const int			REWARD_IMAGE_HEIGHT   	=  NORMAL_IMAGE_HEIGHT; //best to keep this the same as NORMAL_IMAGE_HEIGHT
+const string		REWARD_AUDIO_FILENAME	=	"kids_cheering.wav";
+
+const dur			IMAGE_FADE_IN_DURATION	=	100ms; //should be kept below half the inter audio duration (which is 350ms/2 = 175 ms);
+const dur			IMAGE_SHOW_DURATION		=	500ms; //note: take into consideration this is the actual show duration (excluding
+
+const dur			INTER_AUDIO_DURATION 	= 350ms;
+const dur			INTRA_AUDIO_DURATION 	= 750ms;
+
+enum Focus_word
+{
+	LUT,
+	TOEF,
+};
+
+Focus_word FOCUS_WORD;
+
+string[..] FOCUS_WORD_FN = {"lut.wav", "toef.wav",};

@@ -1,0 +1,184 @@
+/******************************************************************************\
+FILE:           mollen.zp
+AUTHOR:         Chris van Run (UiL-OTS) <C.P.A.vanRun@uu.nl>
+ADAPTED BY:     -
+
+EXPERIMENT:
+
+DESCRIPTION:
+
+HISTORY:
+????????? CvR   Created.
+
+\******************************************************************************/
+
+requires 1.10;
+
+import std_windows1;
+
+import text_picture_page;
+import pause_page;
+import blank_page;
+import participant;
+
+import grouping;
+
+//~ import test_page;
+import texts_nl; // contains al the text elements.
+
+//load the different parts of the experiments
+import practice::practice_block;
+import test::test_block;
+
+Experiment experiment
+{
+    on_event:entry()
+    {	
+		// Enable the button_box
+		control.button_box.open();  
+	    control.button_box.output(0x02); // If necessary set parallel port line D0 to power button box device. (sometimes nesc. for laptop)
+	    	    
+	    // make sure that things are setup dependent on the group that was chosen:
+	    if(selected_group % 2 == 0) // presuming that the LUT is the first and every other group
+				FOCUS_WORD = LUT;
+		else
+				FOCUS_WORD = TOEF;
+		
+		// incorporate the focus word into the instruction texts:		
+		setup_texts(FOCUS_WORD_FN[FOCUS_WORD]);
+		
+		// finally, start showing the windows of the actual test:
+		show_test_windows();
+    }
+    
+    on_event:message()
+    {
+        // On Ctrl+F4 jump unconditionally to the thank-you part.
+        if (message_sender == control && message_arg == SYS_STOP)
+        {
+            control.mark_experiment_aborted();
+            thankyou.enter();
+        }
+    }
+
+    Part welcome
+    {
+        on_event:entry()
+        {
+            text_picture_page.set_text(WELCOME_TEXT);
+            text_picture_page.action(this,0s,0s,5s);
+        }
+    }
+	
+	Part instruction // instruction
+	{
+		on_event:entry()
+        {
+			println("=============================================");
+			println("==           Instructing                   ==");
+			println("=============================================");
+			pause_page.set_text(INSTRUCTION_TEXT, true);
+			pause_page.action(this, 0s, 0s, 500ms, true, 2s);
+		}
+	}
+	
+	Part //practice
+	{
+		on_event:entry()
+        {
+			if(CFG_GIVE_PRACTICE)
+			{	
+				println("=============================================");
+				println("==           Practice                      ==");
+				println("=============================================");
+				practice::practice_call(this);
+			} else signal(this, CONTINUE);
+        }
+	}
+
+	Part instruction2 // instruction2
+	{
+		on_event:entry()
+        {
+			println("=============================================");
+			println("==           Final Instructing             ==");
+			println("=============================================");
+			pause_page.set_text(INSTRUCTION2_TEXT, true);
+			pause_page.action(this, 0s, 0s, 500ms, true, 2s);
+		}
+	}
+	
+	Part first_block
+	{
+		on_event:entry()
+        {			
+			println("=============================================");
+			println("==      Loading in the stimuli files 	    ==");
+			println("=============================================");
+			string filename = string(selected_group) + ".csv";
+			if(test::load_stimuli(test::testitem_list_normal, filename) != OK)
+			{
+				println("Ups: failed to load stimuli: " + filename);
+				terminate;
+			} else
+				println("loaded in " + filename);
+				
+			println("=============================================");
+			println("==            Test Block 1                 ==");
+			println("=============================================");			
+			test::test_call(this, test::testitem_list_normal); // args: caller object (this)
+        }
+	}
+	
+	Part second_block
+	{
+		on_event:entry()
+        {			
+			println("=============================================");
+			println("==            Test Block 2                 ==");
+			println("=============================================");			
+			test::test_call(this, test::testitem_list_normal); // args: caller object (this)
+        }
+	}
+	
+	Part third_block
+	{
+		on_event:entry()
+        {			
+			println("=============================================");
+			println("==            Test Block 3                 ==");
+			println("=============================================");			
+			test::test_call(this, test::testitem_list_normal); // args: caller object (this)
+        }
+	}
+	
+	Part final_block
+	{
+		on_event:entry()
+        {			
+			println("=============================================");
+			println("==            Final Block                  ==");
+			println("=============================================");	
+			
+			string filename = "final_block.csv";		
+			if(test::load_stimuli(test::testitem_list_final_block, filename) != OK)
+			{
+				println("Ups: failed to load stimuli: " + filename);
+				terminate;
+			} else
+				println("loaded in " + filename);
+			
+			test::test_call(this, test::testitem_list_final_block, true); // args: caller object (this)
+        }
+	}
+    
+    Part thankyou
+    {
+        on_event:entry()
+        {			
+			control.end_experiment();   // Check-in session.
+			text_picture_page.set_text(THANK_YOU_TEXT);
+            text_picture_page.action(this,10s,0s,5s);
+        }
+    }
+}

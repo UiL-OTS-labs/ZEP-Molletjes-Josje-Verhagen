@@ -1,0 +1,42 @@
+/******************************************************************************\
+FILE:           shuffle.zm
+AUTHOR:         Theo Veenker <theo.veenker@beexy.nl>
+ADAPTED BY:     -
+
+DESCRIPTION:
+
+Item table shuffling functions.
+
+
+HISTORY:
+2011-10-25 TV   Created.
+
+\******************************************************************************/
+
+
+// Shuffles test_items table (no restrictions on item order).
+int shuffle_test_items(TestItem[] tis)
+{
+	tis.shuffle(0, -1);
+	
+	if(tis.size <= 3)
+		return OK;
+		
+    int i = 3;
+    int tries = 0;
+    while(i != tis.size)
+    {
+		if(tries > 100)
+			return -1;
+			
+		if(tis[i].sndfnC == tis[i-1].sndfnC && tis[i].sndfnC == tis[i-2].sndfnC && tis[i].sndfnC == tis[i-3].sndfnC)
+		{
+			tis.shuffle(0, -1);
+			tries++;
+			i = 3;
+		}
+		i = i + 1;
+	}
+
+    return OK;
+}

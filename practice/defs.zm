@@ -1,0 +1,28 @@
+//NAMESPACE: practice
+
+/******************************************************************************\
+FILE:           defs.zm
+AUTHOR:         Chris van Run <C.P.A.vanrun@uu.nl>
+ADAPTED BY:     -
+
+DESCRIPTION:
+
+Defines the experiment version and database related settings.
+
+
+ATTENTION:
+
+    For Zep 1.10 and later this file simply imports globaldefs.zm
+
+
+HISTORY:
+2014-07-17 CvR
+
+\******************************************************************************/
+
+import globaldefs;
+
+// Item record used for the test phase item table.
+const int NUMBER_OF_FOCUS_WORDS = 4;
+
+const int NUMBER_CANDIDATE_WORDS = 20;

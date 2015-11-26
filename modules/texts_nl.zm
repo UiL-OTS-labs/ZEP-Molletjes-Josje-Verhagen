@@ -1,0 +1,47 @@
+/******************************************************************************\
+FILE:           std_texts_nl.zm
+AUTHOR:         Theo Veenker <theo.veenker@beexy.nl>
+ADAPTED BY:     -
+
+DESCRIPTION:
+
+Defines texts on buttons and other graphic elements.
+Dutch version.
+
+
+HISTORY:
+2009-12-02 TV   Created as part of the standard Zep modules.
+
+\******************************************************************************/
+
+
+// Button texts.
+const string    CONTINUE_BUTTON_TEXT            = "Ga <b>D</b>oor";
+const string    NEXT_BUTTON_TEXT                = "Volgende";
+const string    REPEAT_BUTTON_TEXT              = "Herhaal <b>Z</b>onder Pauze";
+const string    REPEAT_BUTTON_TEXT2             = "Herhaal <b>M</b>et Pauze";
+const string    YES_BUTTON_TEXT                 = "Ja";
+const string    NO_BUTTON_TEXT                  = "Nee";
+const string    TRUE_BUTTON_TEXT                = "Waar";
+const string    FALSE_BUTTON_TEXT               = "Onwaar";
+const string    CORRECT_BUTTON_TEXT             = "Correct";
+const string    INCORRECT_BUTTON_TEXT           = "Incorrect";
+const string    FIRST_BUTTON_TEXT               = "1e";
+const string    SECOND_BUTTON_TEXT              = "2e";
+
+
+// Other texts.
+const string    	WELCOME_TEXT                    = "Welkom!";
+string				INSTRUCTION_TEXT				= "VIA setup_texts!";
+string				INSTRUCTION2_TEXT				= "VIA setup_texts!";
+const string		SCORE_TEXT						= "Er zijn al zoveel molletjes:";
+const string		SCORE_TEXT2						= "Druk ENTER om\nverder te gaan!";
+const string		AFTER_PRACTICE_TEXT				= "Wat een feestmutsen! Je hebt al goed geoefend!";
+const string    	THANK_YOU_TEXT                  = "Wat een groot mollenfeest!\n\nDank je wel!";
+
+void setup_texts(string focusfn)
+{
+	string focus = substring(focusfn, 0, length(focusfn)-4);
+	INSTRUCTION_TEXT = "Hallo!\n\nIn dit spelletje zie je straks allemaal plaatjes van molletjes. Alle molletjes zien er hetzelfde uit, maar ze hebben andere namen.\n\nJij moet goed luisteren of je een molletje hoort dat <b>" + focus +"</b> heet.\n\nAls je een molletje hoort dat <b>" + focus + "</b> heet, druk je zo snel mogelijk op de <i>spatiebalk</i>.\n\nHet molletje krijgt dan een feestmuts op. Hij mag dan mee naar een feestje.\n\nVoor elk molletje dat je naar het feestje brengt, krijg je een punt. Probeer om zoveel mogelijk <b>" + focus + "</b>-molletjes naar het feestje te brengen!\n\nJe gaat nu eerst oefenen.";
+	INSTRUCTION2_TEXT = "Goed gedaan hoor! Nu mag je echt beginnen.\n\nDruk op de <i>spatiebalk</i> als je <b>" + focus + "</b> hoort. Doe dat zo snel mogelijk!\n\nVeel succes!";	
+}

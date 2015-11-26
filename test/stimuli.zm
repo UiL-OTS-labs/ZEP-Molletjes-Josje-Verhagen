@@ -1,0 +1,253 @@
+//NAMESPACE: practice
+
+/******************************************************************************\
+FILE:           stimuli.zm
+AUTHOR:         Chris van Run (UiL-OTS) <C.P.A.vanrun@uu.nl>
+ADAPTED BY:     Chris van Run
+
+DESCRIPTION:
+
+Defines the formats of item table(s) and provides the actual content of
+the item table(s) i.e. stimulus information.
+
+
+HISTORY:
+2014-07-17 CvR		Created.
+
+\******************************************************************************/
+
+
+
+record TestItem
+{
+    int      	id;         // target sequence of digits
+    
+    string		sndfnA;
+    string		sndfnB;
+    string		sndfnC;
+}
+
+// Loads item table(s) from CSV file(s) in the stimuli folder.
+int load_stimuli(TestItem[] target, string filename)
+{
+    int err;
+    
+	// Load data into test_prac_items table.
+    err =  target.load(stimuli_dir() + filename, 
+        true,           // if true, file contains a header row
+        1);             // number of lines to skip before header and data
+    if (err) return err;
+
+    return OK;
+}
+
+TestItem[..] testitem_list_normal; 
+TestItem[..] testitem_list_final_block;
+
+//~ =
+	//~ { //?_RL_ST, rak X lut, sot X toef
+		//~ {1,                       "rak.wav",                       "X_mofig.wav",                       "lut.wav", },
+		//~ {2,                       "rak.wav",                       "X_seta.wav",                       "lut.wav", },
+		//~ {3,                       "rak.wav",                       "X_wiffel.wav",                       "lut.wav", },
+		//~ {4,                       "rak.wav",                       "X_rogges.wav",                       "lut.wav", },
+		//~ {5,                       "rak.wav",                       "X_kengel.wav",                       "lut.wav", },
+		//~ {6,                       "rak.wav",                       "X_kasi.wav",                       "lut.wav", },
+		//~ {7,                       "rak.wav",                       "X_loga.wav",                       "lut.wav", },
+		//~ {8,                       "rak.wav",                       "X_snigger.wav",                       "lut.wav", },
+		//~ {9,                       "rak.wav",                       "X_noeba.wav",                       "lut.wav", },
+		//~ {10,                       "rak.wav",                       "X_domo.wav",                       "lut.wav", },
+		//~ {11,                       "rak.wav",                       "X_wadim.wav",                       "lut.wav", },
+		//~ {12,                       "rak.wav",                       "X_banip.wav",                       "lut.wav", },
+		//~ {13,                       "rak.wav",                       "X_rajee.wav",                       "lut.wav", },
+		//~ {14,                       "rak.wav",                       "X_plizet.wav",                       "lut.wav", },
+		//~ {15,                       "rak.wav",                       "X_naspoe.wav",                       "lut.wav", },
+		//~ {16,                       "rak.wav",                       "X_fidan.wav",                       "lut.wav", },
+		//~ {17,                       "rak.wav",                       "X_nilbo.wav",                       "lut.wav", },
+		//~ {18,                       "rak.wav",                       "X_poemer.wav",                       "lut.wav", },
+		//~ {19,                       "rak.wav",                       "X_tita.wav",                       "lut.wav", },
+		//~ {20,                       "rak.wav",                       "X_bensim.wav",                       "lut.wav", },
+		//~ {21,                       "rak.wav",                       "X_gopem.wav",                       "lut.wav", },
+		//~ {22,                       "rak.wav",                       "X_sulep.wav",                       "lut.wav", },
+		//~ {23,                       "rak.wav",                       "X_hiftam.wav",                       "lut.wav", },
+		//~ {24,                       "rak.wav",                       "X_vami.wav",                       "lut.wav", },
+		//~ {25,                       "sot.wav",                       "X_mofig.wav",                       "toef.wav", },
+		//~ {26,                       "sot.wav",                       "X_seta.wav",                       "toef.wav", },
+		//~ {27,                       "sot.wav",                       "X_wiffel.wav",                       "toef.wav", },
+		//~ {28,                       "sot.wav",                       "X_rogges.wav",                       "toef.wav", },
+		//~ {29,                       "sot.wav",                       "X_kengel.wav",                       "toef.wav", },
+		//~ {30,                       "sot.wav",                       "X_kasi.wav",                       "toef.wav", },
+		//~ {31,                       "sot.wav",                       "X_loga.wav",                       "toef.wav", },
+		//~ {32,                       "sot.wav",                       "X_snigger.wav",                       "toef.wav", },
+		//~ {33,                       "sot.wav",                       "X_noeba.wav",                       "toef.wav", },
+		//~ {34,                       "sot.wav",                       "X_domo.wav",                       "toef.wav", },
+		//~ {35,                       "sot.wav",                       "X_wadim.wav",                       "toef.wav", },
+		//~ {36,                       "sot.wav",                       "X_banip.wav",                       "toef.wav", },
+		//~ {37,                       "sot.wav",                       "X_rajee.wav",                       "toef.wav", },
+		//~ {38,                       "sot.wav",                       "X_plizet.wav",                       "toef.wav", },
+		//~ {39,                       "sot.wav",                       "X_naspoe.wav",                       "toef.wav", },
+		//~ {40,                       "sot.wav",                       "X_fidan.wav",                       "toef.wav", },
+		//~ {41,                       "sot.wav",                       "X_nilbo.wav",                       "toef.wav", },
+		//~ {42,                       "sot.wav",                       "X_poemer.wav",                       "toef.wav", },
+		//~ {43,                       "sot.wav",                       "X_tita.wav",                       "toef.wav", },
+		//~ {44,                       "sot.wav",                       "X_bensim.wav",                       "toef.wav", },
+		//~ {45,                       "sot.wav",                       "X_gopem.wav",                       "toef.wav", },
+		//~ {46,                       "sot.wav",                       "X_sulep.wav",                       "toef.wav", },
+		//~ {47,                       "sot.wav",                       "X_hiftam.wav",                       "toef.wav", },
+		//~ {48,                       "sot.wav",                       "X_vami.wav",                       "toef.wav", },
+	//~ };
+	//~ { //?_RT_SL, rak X toef, sot X lut
+		//~ {1,                       "sot.wav",                       "X_mofig.wav",                       "lut.wav", },
+		//~ {2,                       "sot.wav",                       "X_seta.wav",                       "lut.wav", },
+		//~ {3,                       "sot.wav",                       "X_wiffel.wav",                       "lut.wav", },
+		//~ {4,                       "sot.wav",                       "X_rogges.wav",                       "lut.wav", },
+		//~ {5,                       "sot.wav",                       "X_kengel.wav",                       "lut.wav", },
+		//~ {6,                       "sot.wav",                       "X_kasi.wav",                       "lut.wav", },
+		//~ {7,                       "sot.wav",                       "X_loga.wav",                       "lut.wav", },
+		//~ {8,                       "sot.wav",                       "X_snigger.wav",                       "lut.wav", },
+		//~ {9,                       "sot.wav",                       "X_noeba.wav",                       "lut.wav", },
+		//~ {10,                       "sot.wav",                       "X_domo.wav",                       "lut.wav", },
+		//~ {11,                       "sot.wav",                       "X_wadim.wav",                       "lut.wav", },
+		//~ {12,                       "sot.wav",                       "X_banip.wav",                       "lut.wav", },
+		//~ {13,                       "sot.wav",                       "X_rajee.wav",                       "lut.wav", },
+		//~ {14,                       "sot.wav",                       "X_plizet.wav",                       "lut.wav", },
+		//~ {15,                       "sot.wav",                       "X_naspoe.wav",                       "lut.wav", },
+		//~ {16,                       "sot.wav",                       "X_fidan.wav",                       "lut.wav", },
+		//~ {17,                       "sot.wav",                       "X_nilbo.wav",                       "lut.wav", },
+		//~ {18,                       "sot.wav",                       "X_poemer.wav",                       "lut.wav", },
+		//~ {19,                       "sot.wav",                       "X_tita.wav",                       "lut.wav", },
+		//~ {20,                       "sot.wav",                       "X_bensim.wav",                       "lut.wav", },
+		//~ {21,                       "sot.wav",                       "X_gopem.wav",                       "lut.wav", },
+		//~ {22,                       "sot.wav",                       "X_sulep.wav",                       "lut.wav", },
+		//~ {23,                       "sot.wav",                       "X_hiftam.wav",                       "lut.wav", },
+		//~ {24,                       "sot.wav",                       "X_vami.wav",                       "lut.wav", },
+		//~ {25,                       "rak.wav",                       "X_mofig.wav",                       "toef.wav", },
+		//~ {26,                       "rak.wav",                       "X_seta.wav",                       "toef.wav", },
+		//~ {27,                       "rak.wav",                       "X_wiffel.wav",                       "toef.wav", },
+		//~ {28,                       "rak.wav",                       "X_rogges.wav",                       "toef.wav", },
+		//~ {29,                       "rak.wav",                       "X_kengel.wav",                       "toef.wav", },
+		//~ {30,                       "rak.wav",                       "X_kasi.wav",                       "toef.wav", },
+		//~ {31,                       "rak.wav",                       "X_loga.wav",                       "toef.wav", },
+		//~ {32,                       "rak.wav",                       "X_snigger.wav",                       "toef.wav", },
+		//~ {33,                       "rak.wav",                       "X_noeba.wav",                       "toef.wav", },
+		//~ {34,                       "rak.wav",                       "X_domo.wav",                       "toef.wav", },
+		//~ {35,                       "rak.wav",                       "X_wadim.wav",                       "toef.wav"},
+		//~ {36,                       "rak.wav",                       "X_banip.wav",                       "toef.wav", },
+		//~ {37,                       "rak.wav",                       "X_rajee.wav",                       "toef.wav", },
+		//~ {38,                       "rak.wav",                       "X_plizet.wav",                       "toef.wav", },
+		//~ {39,                       "rak.wav",                       "X_naspoe.wav",                       "toef.wav", },
+		//~ {40,                       "rak.wav",                       "X_fidan.wav",                       "toef.wav", },
+		//~ {41,                       "rak.wav",                       "X_nilbo.wav",                       "toef.wav", },
+		//~ {42,                       "rak.wav",                       "X_poemer.wav",                       "toef.wav", },
+		//~ {43,                       "rak.wav",                       "X_tita.wav",                       "toef.wav", },
+		//~ {44,                       "rak.wav",                       "X_bensim.wav",                       "toef.wav", },
+		//~ {45,                       "rak.wav",                       "X_gopem.wav",                       "toef.wav", },
+		//~ {46,                       "rak.wav",                       "X_sulep.wav",                       "toef.wav", },
+		//~ {47,                       "rak.wav",                       "X_hiftam.wav",                       "toef.wav", },
+		//~ {48,                       "rak.wav",                       "X_vami.wav",                       "toef.wav", },
+	//~ },
+//~ };
+//~ 
+//~ TestItem[..][..] testitem_list_weird =
+//~ {
+	//~ { // ORIGINAL: ?_RL_ST, rak X lut, sot X toef 
+		//~ {1,                       "sot.wav",                       "X_mofig.wav",                       "lut.wav", },
+		//~ {2,                       "sot.wav",                       "X_seta.wav",                       "lut.wav", },
+		//~ {3,                       "sot.wav",                       "X_wiffel.wav",                       "lut.wav", },
+		//~ {4,                       "sot.wav",                       "X_rogges.wav",                       "lut.wav", },
+		//~ {5,                       "sot.wav",                       "X_kengel.wav",                       "lut.wav", },
+		//~ {6,                       "sot.wav",                       "X_kasi.wav",                       "lut.wav", },
+		//~ {7,                       "sot.wav",                       "X_loga.wav",                       "lut.wav", },
+		//~ {8,                       "sot.wav",                       "X_snigger.wav",                       "lut.wav", },
+		//~ {9,                       "tep.wav",                       "X_noeba.wav",                       "lut.wav", },
+		//~ {10,                       "tep.wav",                       "X_domo.wav",                       "lut.wav", },
+		//~ {11,                       "tep.wav",                       "X_wadim.wav",                       "lut.wav", },
+		//~ {12,                       "tep.wav",                       "X_banip.wav",                       "lut.wav", },
+		//~ {13,                       "tep.wav",                       "X_rajee.wav",                       "lut.wav", },
+		//~ {14,                       "tep.wav",                       "X_plizet.wav",                       "lut.wav", },
+		//~ {15,                       "tep.wav",                       "X_naspoe.wav",                       "lut.wav", },
+		//~ {16,                       "tep.wav",                       "X_fidan.wav",                       "lut.wav", },
+		//~ {17,                       "jik.wav",                       "X_nilbo.wav",                       "lut.wav", },
+		//~ {18,                       "jik.wav",                       "X_poemer.wav",                       "lut.wav", },
+		//~ {19,                       "jik.wav",                       "X_tita.wav",                       "lut.wav", },
+		//~ {20,                       "jik.wav",                       "X_bensim.wav",                       "lut.wav", },
+		//~ {21,                       "jik.wav",                       "X_gopem.wav",                       "lut.wav", },
+		//~ {22,                       "jik.wav",                       "X_sulep.wav",                       "lut.wav", },
+		//~ {23,                       "jik.wav",                       "X_hiftam.wav",                       "lut.wav", },
+		//~ {24,                       "jik.wav",                       "X_vami.wav",                       "lut.wav", },
+		//~ {25,                       "rak.wav",                       "X_mofig.wav",                       "toef.wav", },
+		//~ {26,                       "rak.wav",                       "X_seta.wav",                       "toef.wav", },
+		//~ {27,                       "rak.wav",                       "X_wiffel.wav",                       "toef.wav", },
+		//~ {28,                       "rak.wav",                       "X_rogges.wav",                       "toef.wav", },
+		//~ {29,                       "rak.wav",                       "X_kengel.wav",                       "toef.wav", },
+		//~ {30,                       "rak.wav",                       "X_kasi.wav",                       "toef.wav", },
+		//~ {31,                       "rak.wav",                       "X_loga.wav",                       "toef.wav", },
+		//~ {32,                       "rak.wav",                       "X_snigger.wav",                       "toef.wav", },
+		//~ {33,                       "tep.wav",                       "X_noeba.wav",                       "toef.wav", },
+		//~ {34,                       "tep.wav",                       "X_domo.wav",                       "toef.wav", },
+		//~ {35,                       "tep.wav",                       "X_wadim.wav",                       "toef.wav", },
+		//~ {36,                       "tep.wav",                       "X_banip.wav",                       "toef.wav", },
+		//~ {37,                       "tep.wav",                       "X_rajee.wav",                       "toef.wav", },
+		//~ {38,                       "tep.wav",                       "X_plizet.wav",                       "toef.wav", },
+		//~ {39,                       "tep.wav",                       "X_naspoe.wav",                       "toef.wav", },
+		//~ {40,                       "tep.wav",                       "X_fidan.wav",                       "toef.wav", },
+		//~ {41,                       "jik.wav",                       "X_nilbo.wav",                       "toef.wav", },
+		//~ {42,                       "jik.wav",                       "X_poemer.wav",                       "toef.wav", },
+		//~ {43,                       "jik.wav",                       "X_tita.wav",                       "toef.wav", },
+		//~ {44,                       "jik.wav",                       "X_bensim.wav",                       "toef.wav", },
+		//~ {45,                       "jik.wav",                       "X_gopem.wav",                       "toef.wav", },
+		//~ {46,                       "jik.wav",                       "X_sulep.wav",                       "toef.wav", },
+		//~ {47,                       "jik.wav",                       "X_hiftam.wav",                       "toef.wav", },
+		//~ {48,                       "tep.wav",                       "X_vami.wav",                       "toef.wav", },
+//~ 
+	//~ },
+	//~ { // ORIGINAL: ?_RL_ST, rak X lut, sot X toef
+		//~ {1,                       "rak.wav",                       "X_mofig.wav",                       "lut.wav", },
+		//~ {2,                       "rak.wav",                       "X_seta.wav",                       "lut.wav", },
+		//~ {3,                       "rak.wav",                       "X_wiffel.wav",                       "lut.wav", },
+		//~ {4,                       "rak.wav",                       "X_rogges.wav",                       "lut.wav", },
+		//~ {5,                       "rak.wav",                       "X_kengel.wav",                       "lut.wav", },
+		//~ {6,                       "rak.wav",                       "X_kasi.wav",                       "lut.wav", },
+		//~ {7,                       "rak.wav",                       "X_loga.wav",                       "lut.wav", },
+		//~ {8,                       "sot.wav",                       "X_snigger.wav",                       "lut.wav", },
+		//~ {9,                       "tep.wav",                       "X_noeba.wav",                       "lut.wav", },
+		//~ {10,                       "tep.wav",                       "X_domo.wav",                       "lut.wav", },
+		//~ {11,                       "tep.wav",                       "X_wadim.wav",                       "lut.wav", },
+		//~ {12,                       "tep.wav",                       "X_banip.wav",                       "lut.wav", },
+		//~ {13,                       "tep.wav",                       "X_rajee.wav",                       "lut.wav", },
+		//~ {14,                       "tep.wav",                       "X_plizet.wav",                       "lut.wav", },
+		//~ {15,                       "tep.wav",                       "X_naspoe.wav",                       "lut.wav", },
+		//~ {16,                       "tep.wav",                       "X_fidan.wav",                       "lut.wav", },
+		//~ {17,                       "jik.wav",                       "X_nilbo.wav",                       "lut.wav", },
+		//~ {18,                       "jik.wav",                       "X_poemer.wav",                       "lut.wav", },
+		//~ {19,                       "jik.wav",                       "X_tita.wav",                       "lut.wav", },
+		//~ {20,                       "jik.wav",                       "X_bensim.wav",                       "lut.wav", },
+		//~ {21,                       "jik.wav",                       "X_gopem.wav",                       "lut.wav", },
+		//~ {22,                       "jik.wav",                       "X_sulep.wav",                       "lut.wav", },
+		//~ {23,                       "jik.wav",                       "X_hiftam.wav",                       "lut.wav", },
+		//~ {24,                       "jik.wav",                       "X_vami.wav",                       "lut.wav", },
+		//~ {25,                       "sot.wav",                       "X_mofig.wav",                       "toef.wav", },
+		//~ {26,                       "sot.wav",                       "X_seta.wav",                       "toef.wav", },
+		//~ {27,                       "sot.wav",                       "X_wiffel.wav",                       "toef.wav", },
+		//~ {28,                       "sot.wav",                       "X_rogges.wav",                       "toef.wav", },
+		//~ {29,                       "sot.wav",                       "X_kengel.wav",                       "toef.wav", },
+		//~ {30,                       "sot.wav",                       "X_kasi.wav",                       "toef.wav", },
+		//~ {31,                       "sot.wav",                       "X_loga.wav",                       "toef.wav", },
+		//~ {32,                       "sot.wav",                       "X_snigger.wav",                       "toef.wav", },
+		//~ {33,                       "tep.wav",                       "X_noeba.wav",                       "toef.wav", },
+		//~ {34,                       "tep.wav",                       "X_domo.wav",                       "toef.wav", },
+		//~ {35,                       "tep.wav",                       "X_wadim.wav",                       "toef.wav", },
+		//~ {36,                       "tep.wav",                       "X_banip.wav",                       "toef.wav", },
+		//~ {37,                       "tep.wav",                       "X_rajee.wav",                       "toef.wav", },
+		//~ {38,                       "tep.wav",                       "X_plizet.wav",                       "toef.wav", },
+		//~ {39,                       "tep.wav",                       "X_naspoe.wav",                       "toef.wav", },
+		//~ {40,                       "tep.wav",                       "X_fidan.wav",                       "toef.wav", },
+		//~ {41,                       "jik.wav",                       "X_nilbo.wav",                       "toef.wav", },
+		//~ {42,                       "jik.wav",                       "X_poemer.wav",                       "toef.wav", },
+		//~ {43,                       "jik.wav",                       "X_tita.wav",                       "toef.wav", },
+		//~ {44,                       "jik.wav",                       "X_bensim.wav",                       "toef.wav", },
+		//~ {45,                       "jik.wav",                       "X_gopem.wav",                       "toef.wav", },
+		//~ {46,                       "jik.wav",                       "X_sulep.wav",                       "toef.wav", },
+		//~ {47,                       "jik.wav",                       "X_hiftam.wav",                       "toef.wav", },
+		//~ {48,                       "tep.wav",                       "X_vami.wav",                       "toef.wav", },
+	//~ },
+//~ };

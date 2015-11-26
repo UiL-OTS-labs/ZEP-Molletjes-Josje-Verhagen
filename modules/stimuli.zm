@@ -1,0 +1,49 @@
+/******************************************************************************\
+FILE:           stimuli.zm
+AUTHOR:         Theo Veenker (UiL-OTS) <T.J.G.Veenker@uu.nl>
+ADAPTED BY:     Chris van Run
+
+DESCRIPTION:
+
+Defines the formats of item table(s) and provides the actual content of
+the item table(s) i.e. stimulus information.
+
+
+HISTORY:
+??????? CvR		Created.
+
+\******************************************************************************/
+
+
+// Item record used for the test phase item table.
+record TestItem
+{
+    int      	id;         // target sequence of digits
+    
+    string		sndfnA;
+    string		sndfnB;
+    string		sndfnC;
+    
+    int		required_response;
+}
+
+TestItem[..] practice_for_acquaint = 
+{	//id		filename sound A			sound B						sound C			If there is a required response here? (0=no, 1 = yes)
+	{1,			"rak.wav",			"rak.wav",			"lut.wav",		0},
+	{2,			"rak.wav",			"rak.wav",			"rak.wav",		0},
+	{3,			"rak.wav",			"rak.wav",			"lut.wav",		0},
+};
+
+TestItem[..] practice_for_speed = 
+{	//id		filename sound A			sound B						sound C			If there is a required response here? (0=no, 1 = yes)
+	{1,			"rak.wav",			"rak.wav",			"lut.wav",		1},
+	{2,			"rak.wav",			"rak.wav",			"rak.wav",		1},
+	{3,			"rak.wav",			"rak.wav",			"lut.wav",		1},
+};
+
+TestItem[..] items_for_test = 
+{	//id		filename sound A			sound B						sound C			If there is a required response here? (0=no, 1 = yes)
+	{1,			"rak.wav",			"rak.wav",			"lut.wav",		1},
+	{2,			"rak.wav",			"rak.wav",			"rak.wav",		0},
+	{3,			"rak.wav",			"rak.wav",			"lut.wav",		1},
+};

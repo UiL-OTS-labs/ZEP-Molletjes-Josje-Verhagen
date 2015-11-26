@@ -1,0 +1,65 @@
+//NAMESPACE: practice
+
+/******************************************************************************\
+FILE:           practice.zp
+AUTHOR:         Chris van Run (UiL-OTS)
+ADAPTED BY:     -
+
+EXPERIMENT:     A poper Digit Span test
+
+DESCRIPTION: This contains the practice block that shows
+
+HISTORY:
+2014-05-15 CvR   Created.
+
+\******************************************************************************/
+import defs;
+import stimuli;
+import practice_page;
+import pause_repeat_continue_page;
+
+bool pauses;
+
+Block practice_head_block
+	{		
+		Block practice_block
+		{
+			init()
+			{
+				 pauses = true;
+			}
+			
+			on_event:entry()
+			{
+				setup_word_string();
+				practice_page.setup();
+				practice_page.hide_cursor();
+				practice_page.action(this, WORD_STRING_ACQUAINT, reference_time + IMAGE_FADE_IN_DURATION + 200ms, !pauses);
+			}
+
+
+			on_event:exit()
+			{
+				practice_page.cleanup();
+				practice_page.show_cursor();
+			}
+		}
+
+		Part
+		{
+			on_event:entry()
+			{
+				pause_repeat_continue_page.set_text(AFTER_PRACTICE_TEXT);
+				// Switch the two lines below to in order to enable feedback after practice for experimenter to judge
+				//pause_repeat_continue_page.action(this, 0s, -1s, 500ms, true, 2s, practice_head_block, string(practice_page.score)+ "/" + NUMBER_OF_FOCUS_WORDS + "\n" + practice_page.reaction_times);
+				pause_repeat_continue_page.action(this, 0s, -1s, 500ms, true, 2s, practice_head_block);
+			}
+		}	
+	}
+
+void practice_call(Part caller)
+{	
+	// Activate the task. When the task is done, the registered caller
+    // (c.q. the main experiment object) will automatically be signalled.
+    practice_head_block.enter(caller);
+}

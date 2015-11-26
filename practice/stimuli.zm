@@ -1,0 +1,134 @@
+//NAMESPACE: practice
+
+/******************************************************************************\
+
+FILE:           stimuli.zm
+AUTHOR:         Chris van Run (UiL-OTS) <C.P.A.vanrun@uu.nl>
+ADAPTED BY:     Chris van Run
+
+DESCRIPTION:
+
+Defines the formats of item table(s) and provides the actual content of
+the item table(s) i.e. stimulus information.
+
+
+HISTORY:
+2014-07-17 CvR		Created.
+
+\******************************************************************************/
+
+string[..] WORD_STRING_ACQUAINT;
+
+string[..] CANDIDATE_WORDS_FN =
+{
+	"sot.wav",
+	"rak.wav",
+	"X_mofig.wav",
+	"X_seta.wav",
+	"X_wiffel.wav",
+	"X_rogges.wav",
+	"X_kengel.wav",
+	"X_kasi.wav",
+	"X_loga.wav",
+	"X_snigger.wav",
+	"X_noeba.wav",
+	"X_domo.wav",
+	"X_wadim.wav",
+	"X_banip.wav",
+	"jik.wav",
+	"X_rajee.wav",
+	"X_plizet.wav",
+	"X_naspoe.wav",
+	"X_fidan.wav",
+	"X_nilbo.wav",
+	"X_poemer.wav",
+	"X_tita.wav",
+	"X_bensim.wav",
+	"X_gopem.wav",
+	"X_sulep.wav",
+	"X_hiftam.wav",
+	"tep.wav",
+	"X_vami.wav"
+};
+
+int setup_word_string()
+{
+	WORD_STRING_ACQUAINT.size = CANDIDATE_WORDS_FN.size;
+	int index;
+	
+	while(index < WORD_STRING_ACQUAINT.size)
+	{
+		WORD_STRING_ACQUAINT[index] = CANDIDATE_WORDS_FN[index];
+		index++;
+	}
+
+	int i;
+	if(NUMBER_CANDIDATE_WORDS > WORD_STRING_ACQUAINT.size)
+	{
+		int original_size = WORD_STRING_ACQUAINT.size;
+		WORD_STRING_ACQUAINT.size = NUMBER_CANDIDATE_WORDS; // truncate the list!
+		int old_index;
+		int new_index=original_size;
+		while(new_index < WORD_STRING_ACQUAINT.size)
+		{
+			if(old_index == original_size)
+				old_index = 0;
+			WORD_STRING_ACQUAINT[new_index] = WORD_STRING_ACQUAINT[old_index];
+			old_index++;
+			new_index++;
+		}
+	}
+	else
+		WORD_STRING_ACQUAINT.size = NUMBER_CANDIDATE_WORDS; // truncate the list!
+		
+	while(i < NUMBER_OF_FOCUS_WORDS)
+	{
+		WORD_STRING_ACQUAINT.size = WORD_STRING_ACQUAINT.size+FOCUS_WORD_FN.size;
+		int focus_word_index = 0;
+		while(focus_word_index <FOCUS_WORD_FN.size)
+		{
+			WORD_STRING_ACQUAINT[WORD_STRING_ACQUAINT.size-(focus_word_index+1)] = FOCUS_WORD_FN[focus_word_index]; 
+			focus_word_index++;
+		}
+		
+		i++;
+	}
+	
+	int nattempts;
+    bool again = true;
+	while (again && ++nattempts < 100)
+    {
+        // First shuffle the entire item table.
+        again = false;
+        WORD_STRING_ACQUAINT.shuffle(0, -1);
+ 
+        // Walk over the table and check for items conflicting with the
+        // criterion. If an item conflicts, then swap it randomly with one
+        // of the items not yet looked at.
+        int n = 1;
+        while (n < WORD_STRING_ACQUAINT.size)
+        {
+            while (	WORD_STRING_ACQUAINT[n] == FOCUS_WORD_FN[FOCUS_WORD] && WORD_STRING_ACQUAINT[n-1] == FOCUS_WORD_FN[FOCUS_WORD])
+            {
+				again = true;
+				break;
+            }
+            if (again) break;
+            n++;
+        }
+    }
+    
+    if (again)
+        println("Unable to shuffle test_items according to criteria. "
+            "Check table and/or criteria.");
+    
+    //~ i = 0;
+	//~ while(i<WORD_STRING_ACQUAINT.size) //print the current list
+	//~ {
+		//~ println(WORD_STRING_ACQUAINT[i]);
+		//~ i++;
+	//~ }
+	return OK;
+}
+
+

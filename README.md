@@ -6,7 +6,7 @@ No negative feedback is provided. The experiment also registers the participants
 Triplets are generated according to a rule set and randomised.
 
 # Documentation
-A basis explanation (in Dutch) is given by the `documentation/instructies.pdf`.
+A basis explanation (in Dutch) can be found in `documentation/instructies.pdf`.
 
 # Zep Version
-Writen for `Zep version 1.10`, Ubuntu-12.04 with `zeprt real-time module` running on the kernel.
+Writen for `Zep version 1.10` and Ubuntu-12.04 with `zeprt` real-time module running on the kernel.

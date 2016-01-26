@@ -9,4 +9,4 @@ Triplets are generated according to a rule set and randomised.
 A basis explanation (in Dutch) can be found in `documentation/instructies.pdf`.
 
 # Zep Version
-Writen for `Zep version 1.10` and Ubuntu-12.04 with `zeprt` real-time module running on the kernel.
+Writen for `Zep version 1.12` and the BeexyBox response button for optimal measurement of reaction times.

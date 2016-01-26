@@ -50,9 +50,7 @@ Block practice_head_block
 			on_event:entry()
 			{
 				pause_repeat_continue_page.set_text(AFTER_PRACTICE_TEXT);
-				// Switch the two lines below to in order to enable feedback after practice for experimenter to judge
-				//pause_repeat_continue_page.action(this, 0s, -1s, 500ms, true, 2s, practice_head_block, string(practice_page.score)+ "/" + NUMBER_OF_FOCUS_WORDS + "\n" + practice_page.reaction_times);
-				pause_repeat_continue_page.action(this, 0s, -1s, 500ms, true, 2s, practice_head_block);
+				pause_repeat_continue_page.action(this, 0s, -1s, 500ms, true, 2s, practice_head_block, string(practice_page.score)+ "/" + NUMBER_OF_FOCUS_WORDS + "\n" + practice_page.reaction_times);
 			}
 		}	
 	}

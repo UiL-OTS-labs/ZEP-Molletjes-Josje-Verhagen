@@ -20,7 +20,7 @@
 #-------------------------------------------------------------------------------
 
 # Define required Zep version: Only if there is no 'use-zp-x.y
-ZEP_VER=1.6 
+ZEP_VER=1.10 
 
 # Iff installed at nonstandard location, define installation location here:
 #ZEP_DIR=/opt/zep
@@ -86,26 +86,14 @@ fi
 DB_DIR='db' 						# Typical name of the databases
 DATA_DIR='data'						# Typical name of the data directory
 
-TEMP_FOLDER='/home/tmp/'					# The location to make a local account, using the /tmp/ makes sure it gets cleaned up at every boot!
-TEMP_ZEP_FOLDER="zep-scripts/"
+TEMP_FOLDER='/tmp/zep-tmp/'					# The location to make a local account, using the /tmp/ makes sure it gets cleaned up at every boot!
+DATE=$(date +%H)					# To make the local copy unique (hourly and user)
 #-------------------------------------------------------------------------------
-
-if [ ! -w "$TEMP_FOLDER" ]; then
-  # Control will enter here if $DIRECTORY doesn't exist.
-  # Just making sure we actually have rights to do stuff at the local tmp dir.
-  zenity --warning --height=250 --width=400 --text="Could not find or have insufficient rights in $TEMP_FOLDER. Contact support or run the script from the fileserver"
-  exit
-fi
-
-if [ ! -d "$TEMP_FOLDER$TEMP_ZEP_FOLDER" ]; then
-  # Control will enter here if $DIRECTORY doesn't exist.
-  mkdir --mode=777 "$TEMP_FOLDER$TEMP_ZEP_FOLDER"
-fi
 
 # Let the caller know that a transfer is about to happen. Won't detail it to much though!
 
-MESSAGE="The ZEP script will be prepared for use in the lab facilities.\n\nDepending on the script size this might take a few moments. A terminal will be opened once the setup has been complete.\n\nPress OK and please be patient."
-echo $MESSAGE | zenity --text-info --height=250 --width=400 --title="Copying Zep script files to $TEMP_FOLDER$TEMP_ZEP_FOLDER"
+MESSAGE="The ZEP script will be prepared for use in the lab facilities.\n\nDepending on the script size this might take a few moments. A terminal will be opened once the setup has been complete.\n\nPlease be patient."
+echo $MESSAGE | zenity --text-info --height=250 --width=400 --title="Copying Zep script files to $TEMP_FOLDER"
 
 if [ $? = 1 ]; then
 	exit
@@ -114,26 +102,25 @@ fi
 #create the temporary folders
 CURRENT_PATH=$PWD
 ZEP_FOLDER_NAME=$(basename $PWD)
-TEMP_LOCAL_FOLDER=$TEMP_FOLDER$TEMP_ZEP_FOLDER"zep"-$USER-$ZEP_FOLDER_NAME # Building the full path to the tmp directory
+TEMP_LOCAL_FOLDER=$TEMP_FOLDER$DATE'h'-$USER-$ZEP_FOLDER_NAME # Building the full path to the tmp directory
 
 #make a local copy of the directory the zep installation is in but exclude the current database and data directory, also include any *.mpg unless they are under stimuli
-mkdir -p --mode=755 $TEMP_LOCAL_FOLDER
-rsync -a --exclude=$DB_DIR --exclude=$DATA_DIR  --include=stimuli/** --exclude=*.mpg "$CURRENT_PATH"/*  "$TEMP_LOCAL_FOLDER" 
+mkdir -p $TEMP_LOCAL_FOLDER
+rsync -a --exclude=$DB_DIR --exclude=$DATA_DIR  --include=stimuli/** --exclude=*.mpg $CURRENT_PATH/*  $TEMP_LOCAL_FOLDER 
 
-
-if [ ! -d $DB_DIR ]; then
-	rm -fr $TEMP_LOCAL_FOLDER'/'$DB_DIR # just make sure that here is no folder at the temp location
-	mkdir $CURRENT_PATH'/'$DB_DIR # no database exists yet: create it at the call location
+if [ ! -d $CURRENT_PATH/$DB_DIR ]; then
+	rm -fr $TEMP_LOCAL_FOLDER/$DB_DIR # just make sure that here is no folder at the temp location
+	mkdir $CURRENT_PATH/$DB_DIR # no database exists yet: create it at the call location
 fi
 
 if [ ! -d $DATA_DIR ]; then 
-	rm -fr $TEMP_LOCAL_FOLDER'/'$DATA_DIR # just make sure that here is no folder at the temp location
-	mkdir $CURRENT_PATH'/'$DATA_DIR # no data folder exists yet: create it at the call location
+	rm -fr $TEMP_LOCAL_FOLDER/$DATA_DIR # just make sure that here is no folder at the temp location
+	mkdir $CURRENT_PATH/$DATA_DIR # no data folder exists yet: create it at the call location
 fi
 
-# create a syslink from the network location to the local database and data folder TARGET_DIR DIRECTORY
-ln -sf $CURRENT_PATH'/'$DB_DIR $TEMP_LOCAL_FOLDER
-ln -sf $CURRENT_PATH'/'$DATA_DIR $TEMP_LOCAL_FOLDER
+# create a syslink from the network location to the local database and data folder
+ln -sf $CURRENT_PATH'/'$DB_DIR $TEMP_LOCAL_FOLDER/$DB_DIR 
+ln -sf $CURRENT_PATH'/'$DATA_DIR $TEMP_LOCAL_FOLDER/$DATA_DIR
 
 #-------------------------------------------------------------------------------
 # This part then opens up a terminal using the temporary local folder as a working directory

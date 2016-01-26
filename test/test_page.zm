@@ -90,9 +90,9 @@ Page test_page
 			{
 				pre_update()
 				{
-					if(relative_frame < num_frames_fade_in )
+					if(relative_frame <= num_frames_fade_in )
 						this.alpha = real(relative_frame)/real(num_frames_fade_in);
-					else if(reverse_relative_frame < num_frames_fade_in)
+					else if(reverse_relative_frame <= num_frames_fade_in)
 						this.alpha = real(reverse_relative_frame)/real(num_frames_fade_in);
 				}
 				
@@ -111,9 +111,9 @@ Page test_page
 			{
 				pre_update()
 				{
-					if(relative_frame < num_frames_fade_in )
+					if(relative_frame <= num_frames_fade_in )
 						this.alpha = real(relative_frame)/real(num_frames_fade_in);
-					else if(reverse_relative_frame < num_frames_fade_in)
+					else if(reverse_relative_frame <= num_frames_fade_in)
 						this.alpha = real(reverse_relative_frame)/real(num_frames_fade_in);
 				}
 				
@@ -132,9 +132,9 @@ Page test_page
 			{
 				pre_update()
 				{
-					if(relative_frame < num_frames_fade_in )
+					if(relative_frame <= num_frames_fade_in )
 						this.alpha = real(relative_frame)/real(num_frames_fade_in);
-					else if(reverse_relative_frame < num_frames_fade_in)
+					else if(reverse_relative_frame <= num_frames_fade_in)
 						this.alpha = real(reverse_relative_frame)/real(num_frames_fade_in);
 				}
 				

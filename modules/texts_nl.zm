@@ -42,6 +42,6 @@ const string    	THANK_YOU_TEXT                  = "Wat een groot mollenfeest!\n
 void setup_texts(string focusfn)
 {
 	string focus = substring(focusfn, 0, length(focusfn)-4);
-	INSTRUCTION_TEXT = "Hallo!\n\nIn dit spelletje zie je straks allemaal plaatjes van molletjes. Alle molletjes zien er hetzelfde uit, maar ze hebben andere namen.\n\nJij moet goed luisteren of je een molletje hoort dat <b>" + focus +"</b> heet.\n\nAls je een molletje hoort dat <b>" + focus + "</b> heet, druk je zo snel mogelijk op de <i>spatiebalk</i>.\n\nHet molletje krijgt dan een feestmuts op. Hij mag dan mee naar een feestje.\n\nVoor elk molletje dat je naar het feestje brengt, krijg je een punt. Probeer om zoveel mogelijk <b>" + focus + "</b>-molletjes naar het feestje te brengen!\n\nJe gaat nu eerst oefenen.";
-	INSTRUCTION2_TEXT = "Goed gedaan hoor! Nu mag je echt beginnen.\n\nDruk op de <i>spatiebalk</i> als je <b>" + focus + "</b> hoort. Doe dat zo snel mogelijk!\n\nVeel succes!";	
+	INSTRUCTION_TEXT = "Hallo!\n\nIn dit spelletje zie je straks allemaal plaatjes van molletjes. Alle molletjes zien er hetzelfde uit, maar ze hebben andere namen.\n\nJij moet goed luisteren of je een molletje hoort dat <b>" + focus +"</b> heet.\n\nAls je een molletje hoort dat <b>" + focus + "</b> heet, druk je zo snel mogelijk op een <i>knop</i>.\n\nHet molletje krijgt dan een feestmuts op. Hij mag dan mee naar een feestje.\n\nVoor elk molletje dat je naar het feestje brengt, krijg je een punt. Probeer om zoveel mogelijk <b>" + focus + "</b>-molletjes naar het feestje te brengen!\n\nJe gaat nu eerst oefenen.";
+	INSTRUCTION2_TEXT = "Goed gedaan hoor! Nu mag je echt beginnen.\n\nDruk op een <i>knop</i> als je <b>" + focus + "</b> hoort. Doe dat zo snel mogelijk!\n\nVeel succes!";	
 }

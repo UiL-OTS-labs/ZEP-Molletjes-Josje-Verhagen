@@ -34,8 +34,13 @@ Experiment experiment
 {
     on_event:entry()
     {	
+
 		// Enable the button_box
-		control.button_box.open("/dev/ttyACM0");  
+		if(open_button_box() != OK)
+		{
+			println("Could not open button box!");
+			terminate;
+		}
 	    	    
 	    // make sure that things are setup dependent on the group that was chosen:
 	    if(selected_group % 2 == 0) // presuming that the LUT is the first and every other group
@@ -50,6 +55,24 @@ Experiment experiment
 		show_test_windows();
     }
     
+	int open_button_box()
+	{
+		int index = 0;
+		while(index < BEEXY_BOX_PORT_ADDRESS_CANDIDATES.size)
+		{
+			string address = BEEXY_BOX_PORT_ADDRESS_CANDIDATES[index];
+			control.button_box.open(address); 
+			if(control.button_box.is_open)
+			{
+				println("Managed to open button box on " + address);
+				return OK;
+			}
+			index = index + 1;
+		}
+		
+		return ERROR;
+	}
+	
     on_event:message()
     {
         // On Ctrl+F4 jump unconditionally to the thank-you part.

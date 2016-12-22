@@ -64,6 +64,15 @@ const dur			IMAGE_SHOW_DURATION		=	500ms; //note: take into consideration this i
 const dur			INTER_AUDIO_DURATION 	= 350ms;
 const dur			INTRA_AUDIO_DURATION 	= 750ms;
 
+string[..] BEEXY_BOX_PORT_ADDRESS_CANDIDATES = {
+	"/dev/ttyACM0",
+	"/dev/ttyACM1",
+	"COM1",
+	"COM2",
+	"COM3",
+	"COM4",
+};
+
 enum Focus_word
 {
 	LUT,

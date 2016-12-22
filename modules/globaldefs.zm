@@ -67,6 +67,7 @@ const dur			INTRA_AUDIO_DURATION 	= 750ms;
 string[..] BEEXY_BOX_PORT_ADDRESS_CANDIDATES = {
 	"/dev/ttyACM0",
 	"/dev/ttyACM1",
+	"COM",
 	"COM1",
 	"COM2",
 	"COM3",

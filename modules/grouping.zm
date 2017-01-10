@@ -17,12 +17,12 @@ HISTORY:
 // Symbolic definition of groups.
 enum TestGroup
 {
-    n_lut_RL_ST, 	// rak X lut, sot X toef - drukken bij lut maar met een beetje noise
-    n_toef_RL_ST, // rak X lut, sot X toef - drukken bij toef maar met een beetje noise
-    n_lut_RT_SL, 	// rak X toef, sot X lut - drukken bij lut maar met een beetje noise
-    n_toef_RT_SL, // rak X toef, sot X lut - drukken bij toef maar met een beetje noise
+    lut_RL_ST, 	// rak X lut, sot X toef - drukken bij lut
+    toef_RL_ST, // rak X lut, sot X toef - drukken bij toef
+    lut_RT_SL, 	// rak X toef, sot X lut - drukken bij lut
+    toef_RT_SL, // rak X toef, sot X lut - drukken bij toef
 }
-    
+
 // Assigns participant to a group.
 int assign_participant_to_group()
 {

@@ -19,6 +19,8 @@ void create_participant_fields()
 {
 	expdb.participant.add_enum_field("Gender_M_F", "M|F");
     expdb.participant.add_enum_field("Language_Group_mono_bi", "mono|bi");
+    expdb.participant.add_enum_field("Familial_Risk_fr_nfr", "fr|nfr");
+
 }
 
 
@@ -26,6 +28,5 @@ void create_participant_fields()
 int check_participant_fields()
 {
 	if (!expdb.participant.has_enum_field("Gender_M_F")) return ERROR;
-    if (!expdb.participant.has_enum_field("Language_Group_mono_bi")) return ERROR;
     return OK;
 }
